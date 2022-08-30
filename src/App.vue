@@ -12,16 +12,16 @@ import { onMounted, onUnmounted, ref } from 'vue';
 
 const tmiIsConnected = ref(false);
 const messages = ref<Message[]>([
-	{
-		channel: '#avesmhl',
-		displayName: 'Alca',
-		emotesTwitch: {},
-		id: '124',
-		text: '🌠 POGGIES 🌠 POGGIES 🌠 POGGIES 🌠 POGGIES',
-		type: 'chat',
-		userId: '7676884',
-		username: 'alca',
-	}
+	// {
+	// 	channel: '#avesmhl',
+	// 	displayName: 'Alca',
+	// 	emotesTwitch: {},
+	// 	id: '124',
+	// 	text: '🌠 POGGIES 🌠 POGGIES 🌠 POGGIES 🌠 POGGIES',
+	// 	type: 'chat',
+	// 	userId: '7676884',
+	// 	username: 'alca',
+	// }
 	// {
 	// 	channel: '#alca',
 	// 	displayName: 'Alca',
