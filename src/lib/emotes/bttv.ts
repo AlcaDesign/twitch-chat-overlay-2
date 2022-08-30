@@ -19,22 +19,28 @@ function makeRequest(endpoint: string) {
 	return prom;
 }
 
-async function _getChannelByTwitchId(twitchId: string): Promise<BTTV.GetChannelByTwitchId> {
+async function _getChannelByTwitchId(twitchId: string): Promise<BTTV.GetChannelByTwitchId | BTTV.ApiError> {
 	return await makeRequest(`/users/twitch/${twitchId}`);
 }
 async function getChannelByTwitchId(twitchId: string): Promise<Emote[]> {
 	const data = await _getChannelByTwitchId(twitchId);
+	if('message' in data) {
+		return [];
+	}
 	return [
 		...data.channelEmotes.map(convertEmote),
 		...data.sharedEmotes.map(convertEmote),
 	];
 }
 
-async function _getGlobal(): Promise<BTTV.GetGlobal> {
+async function _getGlobal(): Promise<BTTV.GetGlobal | BTTV.ApiError> {
 	return await makeRequest('/emotes/global');
 }
 async function getGlobal(): Promise<Emote[]> {
 	const data = await _getGlobal();
+	if('message' in data) {
+		return [];
+	}
 	return data.map(convertEmote);
 }
 
@@ -66,6 +72,9 @@ namespace BTTV {
 		user: User;
 	}
 	export type Emote = EmoteWithUser | EmoteWithUserId;
+	export interface ApiError {
+		message: string;
+	}
 	export interface GetChannelByTwitchId {
 		id: string;
 		bots: string[];

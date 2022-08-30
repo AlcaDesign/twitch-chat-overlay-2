@@ -25,19 +25,25 @@ function makeRequest(endpoint: string) {
 	return prom;
 }
 
-async function _getChannelByTwitchLogin(twitchLogin: string): Promise<SevenTV.GetRoomByTwitchLogin> {
+async function _getChannelByTwitchLogin(twitchLogin: string): Promise<SevenTV.GetRoomByTwitchLogin | SevenTV.ApiError> {
 	return await makeRequest(`users/${twitchLogin}/emotes`);
 }
 async function getChannelByTwitchLogin(twitchLogin: string): Promise<Emote[]> {
 	const data = await _getChannelByTwitchLogin(twitchLogin);
+	if('error' in data) {
+		return [];
+	}
 	return data.map(convertEmote);
 }
 
-async function _getGlobal(): Promise<SevenTV.GetGlobal> {
+async function _getGlobal(): Promise<SevenTV.GetGlobal | SevenTV.ApiError> {
 	return await makeRequest('emotes/global');
 }
 async function getGlobal(): Promise<Emote[]> {
 	const data = await _getGlobal();
+	if('error' in data) {
+		return [];
+	}
 	return data.map(convertEmote);
 }
 
@@ -96,6 +102,12 @@ namespace SevenTV {
 		width: [ number, number, number, number ];
 		height: [ number, number, number, number ];
 		urls: [ [ '1' | '2' | '3' | '4', string ] ];
+	}
+	export interface ApiError {
+		error: string;
+		error_code: number;
+		status: string;
+		status_code: number;
 	}
 	export type GetRoomByTwitchLogin = Emote[];
 	export type GetGlobal = Emote[];

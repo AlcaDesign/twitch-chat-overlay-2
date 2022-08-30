@@ -23,19 +23,25 @@ export async function getUserFromLogin(twitchLogin: string): Promise<FFZ.GetUser
 	return await makeRequest(`_user/${twitchLogin}`);
 }
 
-async function _getChannelByTwitchId(twitchId: string): Promise<FFZ.GetRoomByTwitchID> {
+async function _getChannelByTwitchId(twitchId: string): Promise<FFZ.GetRoomByTwitchID | FFZ.ApiError> {
 	return await makeRequest(`room/id/${twitchId}`);
 }
 async function getChannelByTwitchId(twitchId: string): Promise<Emote[]> {
 	const data = await _getChannelByTwitchId(twitchId);
+	if('error' in data) {
+		return [];
+	}
 	return data.sets[data.room.set].emoticons.map(convertEmote);
 }
 
-async function _getGlobalSet(): Promise<FFZ.GetGlobalSet> {
+async function _getGlobalSet(): Promise<FFZ.GetGlobalSet | FFZ.ApiError> {
 	return await makeRequest('set/global');
 }
 async function getGlobalSet(): Promise<Emote[]> {
 	const data = await _getGlobalSet();
+	if('error' in data) {
+		return [];
+	}
 	return data.default_sets.flatMap(n => data.sets[n].emoticons.map(convertEmote));
 }
 
@@ -120,6 +126,11 @@ namespace FFZ {
 		usage_count: number;
 		created_at: string;
 		last_updated: string;
+	}
+	export interface ApiError {
+		error: string;
+		message: string;
+		status: string;
 	}
 	export interface GetUserFromLogin {
 		user: User;
