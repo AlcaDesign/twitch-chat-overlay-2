@@ -56,9 +56,8 @@ function getTitleForPart(part: MessagePart) {
 const props = defineProps<{
 	message: Message;
 }>();
-// defineEmits<{
-// 	(e: 'ban'): void;
-// }>();
+// defineEmits<{ (e: 'eventName'): void; }>();
+
 const formattedName = (() => {
 	const { displayName, username } = props.message;
 	if(!displayName) {

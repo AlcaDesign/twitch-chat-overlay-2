@@ -2,6 +2,7 @@ import * as bttv from '@/lib/emotes/bttv';
 import * as ffz from '@/lib/emotes/ffz';
 import * as seventv from '@/lib/emotes/7tv';
 import * as cache from '@/lib/emotes/cache';
+import * as helix from '../helix';
 import type { Emote } from '@/types';
 
 export function load(twitchLogin: string): Promise<Emote[]> {
@@ -9,8 +10,9 @@ export function load(twitchLogin: string): Promise<Emote[]> {
 	if(cachedEmotes) {
 		return cachedEmotes;
 	}
-	const prom = ffz.getUserFromLogin(twitchLogin)
-	.then(({ user: { twitch_id: twitchId, name: twitchLogin } }) =>
+	// const prom = ffz.getUserFromLogin(twitchLogin)
+	const prom = helix.getUserByLogin(twitchLogin)
+	.then(({ user: { id: twitchId, login: twitchLogin } }) =>
 		Promise.all([
 			ffz.load(),
 			ffz.load(twitchId.toString()),
