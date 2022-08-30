@@ -264,7 +264,24 @@ function convertTwitchEmotes(test: TmiJS.Tags.EmotesObject, text: string): Emote
 
 </script>
 <style lang="scss" scoped>
-.root {
+.chat-line {
+	& + & {
+		margin-top: 0.25rem;
+	}
+}
+
+.name {
+	font-weight: bold;
+	display: inline-block;
+
+	&:after {
+		content: ':';
+		margin-right: 0.375rem;
+	}
+}
+
+.content {
+	display: inline-block;
 }
 
 .part {
