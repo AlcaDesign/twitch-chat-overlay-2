@@ -1,6 +1,7 @@
 <template lang="pug">
 .chat-line
-	.name {{ formattedName }}
+	//- TODO: Badges
+	.name(:style="{ color: message?.tags?.color || 'black' }") {{ formattedName }}
 	.content
 		.part(
 			v-for="part in parts"
@@ -19,6 +20,7 @@ export interface Message {
 	displayName: string;
 	text: string;
 	emotesTwitch: TmiJS.Tags.EmotesObject;
+	tags: TmiJS.Tags.Message;
 }
 
 import { onMounted, ref } from 'vue';

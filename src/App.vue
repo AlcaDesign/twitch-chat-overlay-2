@@ -123,6 +123,7 @@ onMounted(() => {
 			username: tags.username,
 			// emotes: convertTwitchEmotes(tags.emotes ?? {}, text),
 			emotesTwitch: tags.emotes ?? {},
+			tags,
 		});
 	});
 });
