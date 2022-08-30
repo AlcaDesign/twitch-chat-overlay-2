@@ -237,15 +237,16 @@ function parseMessageIntoParts(message: Message): MessagePart[] {
 	return parts;
 }
 
-function convertTwitchEmotes(test: TmiJS.Tags.EmotesObject, text: string): EmoteInUse[] {
-	const entries = Object.entries(test);
+function convertTwitchEmotes(originalEmotes: TmiJS.Tags.EmotesObject, text: string): EmoteInUse[] {
+	const spreadText = [ ...text ];
+	const entries = Object.entries(originalEmotes);
 	return entries.reduce((p, [ id, indices ]) => {
 		const parseEmoteIndex = (n: string) => {
 			const [ start, end ] = n.split('-');
 			return { start: +start, end: +end + 1 };
 		};
 		const first = parseEmoteIndex(indices[0]);
-		const code = text.slice(first.start, first.end);
+		const code = spreadText.slice(first.start, first.end).join('');
 		const base = {
 			code,
 			id,
