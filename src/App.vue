@@ -91,12 +91,17 @@ function addMessage(message: Message) {
 }
 onMounted(() => {
 	if('tmiClient' in window === false) {
+		const qs = new URLSearchParams(window.location.search);
+		const channels = qs.getAll('channel');
+		if(!channels.length) {
+			channels.push('alca');
+		}
 		window.tmiClient = new tmi.Client({
 			options: {
 				debug: true,
 				skipMembership: true,
 			},
-			channels: [ 'avesmhl' ],
+			channels,
 		});
 		tmiClient.connect();
 	}
@@ -108,7 +113,6 @@ onMounted(() => {
 		tmiIsConnected.value = true;
 	});
 	tmiClient.on('message', (channel, tags, text, _self) => {
-		console.log(tags);
 		addMessage({
 			type: 'chat',
 			id: tags.id,
