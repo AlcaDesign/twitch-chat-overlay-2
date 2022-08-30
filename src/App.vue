@@ -84,7 +84,7 @@ const messages = ref<Message[]>([
 }
 */
 function addMessage(message: Message) {
-	if(messages.value.length > 3) {
+	if(messages.value.length > 15) {
 		messages.value.shift();
 	}
 	messages.value.push(message);
