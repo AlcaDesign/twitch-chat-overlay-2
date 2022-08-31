@@ -145,12 +145,11 @@ function parseMessageIntoParts(message: Message): MessagePart[] {
 		}
 	}
 	parts.reduceRight((_, n, i) => {
-		if(n.type !== 'text') {
+		if(n.type !== 'text' || !n.content.trim()) {
 			return undefined;
 		}
 		const emojiList = twemoji.parse(n.content, { assetType: 'svg' });
 		if(emojiList.length) {
-			console.log(emojiList);
 			const newParts: MessagePart[] = [];
 			const text = n.content;
 			if(emojiList[0].indices[0] > 0) {
@@ -181,7 +180,7 @@ function parseMessageIntoParts(message: Message): MessagePart[] {
 		return undefined;
 	}, undefined);
 	parts.reduceRight((_, n, i) => {
-		if(n.type !== 'text') {
+		if(n.type !== 'text' || !n.content.trim()) {
 			return undefined;
 		}
 		const reg = thirdPartyEmoteRegex.value;
@@ -233,7 +232,6 @@ function parseMessageIntoParts(message: Message): MessagePart[] {
 			parts.splice(i, 1, ...newParts);
 		}
 	}, undefined);
-	// console.log(parts.reduce((p, n) => p + (n.type === 'text' ? n.content : ''), ''));
 	return parts;
 }
 
