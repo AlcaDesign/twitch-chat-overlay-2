@@ -98,7 +98,7 @@ onMounted(() => {
 		}
 		window.tmiClient = new tmi.Client({
 			options: {
-				debug: true,
+				debug: qs.get('debug') === 'true',
 				skipMembership: true,
 			},
 			channels,
