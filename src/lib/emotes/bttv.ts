@@ -20,7 +20,7 @@ function makeRequest(endpoint: string) {
 }
 
 async function _getChannelByTwitchId(twitchId: string): Promise<BTTV.GetChannelByTwitchId | BTTV.ApiError> {
-	return await makeRequest(`/users/twitch/${twitchId}`);
+	return await makeRequest(`users/twitch/${twitchId}`);
 }
 async function getChannelByTwitchId(twitchId: string): Promise<Emote[]> {
 	const data = await _getChannelByTwitchId(twitchId);
@@ -34,7 +34,7 @@ async function getChannelByTwitchId(twitchId: string): Promise<Emote[]> {
 }
 
 async function _getGlobal(): Promise<BTTV.GetGlobal | BTTV.ApiError> {
-	return await makeRequest('/emotes/global');
+	return await makeRequest('emotes/global');
 }
 async function getGlobal(): Promise<Emote[]> {
 	const data = await _getGlobal();
