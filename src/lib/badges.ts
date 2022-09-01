@@ -1,4 +1,4 @@
-import * as cache from '@/lib/emotes/cache';
+import * as cache from '@/lib/cache';
 import * as helix from './helix';
 
 export function load(twitchLogin: string): Promise<Record<string, Record<string, string>>> {
