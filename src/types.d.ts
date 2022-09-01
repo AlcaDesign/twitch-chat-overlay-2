@@ -51,7 +51,9 @@ export namespace TmiJS {
 		}
 		export interface Message {
 			'badge-info': BadgeInfo;
+			'badge-info-raw': string;
 			badges: Badges;
+			'badges-raw': string;
 			'client-nonce': string;
 			color: `#${string}`;
 			'display-name': string;
