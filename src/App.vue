@@ -124,6 +124,10 @@ onMounted(() => {
 			// emotes: convertTwitchEmotes(tags.emotes ?? {}, text),
 			emotesTwitch: tags.emotes ?? {},
 			tags,
+			badges: (tags['badges-raw']?.split(',') ?? []).map(badge => {
+				const [ name, version ] = badge.split('/');
+				return [ name, version ];
+			}),
 		});
 	});
 });

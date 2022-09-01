@@ -1,7 +1,15 @@
 <template lang="pug">
 .chat-line
 	//- TODO: Badges
-	.name(:style="{ color: message?.tags?.color || 'black' }") {{ formattedName }}
+	.badges
+		.badge(
+			v-for="(badge, i) in badges"
+			:key="i"
+			:style="{ backgroundImage: `url(${badge})` }"
+		)
+	.name(
+		:style="{ color: message?.tags?.color || 'black' }"
+	) {{ formattedName }}
 	.content
 		.part(
 			v-for="part in parts"
@@ -11,6 +19,12 @@
 		) {{ getContentForPart(part) }}
 </template>
 <script setup lang="ts">
+import { onMounted, ref } from 'vue';
+import * as twemoji from 'twemoji-parser';
+import type { Emote, EmoteInUse, TmiJS } from '@/types';
+import * as allThirdPartyEmotes from '@/lib/emotes';
+import * as twitchBadges from '@/lib/badges';
+
 export interface Message {
 	type: 'system' | 'chat' | 'action' | 'cheer' | 'announcement' | 'sub' | 'resub' | 'raid';
 	id: string;
@@ -21,57 +35,8 @@ export interface Message {
 	text: string;
 	emotesTwitch: TmiJS.Tags.EmotesObject;
 	tags: TmiJS.Tags.Message;
+	badges: [ string, string ][];
 }
-
-import { onMounted, ref } from 'vue';
-import * as twemoji from 'twemoji-parser';
-import type { Emote, EmoteInUse, TmiJS } from '@/types';
-import * as allThirdPartyEmotes from '@/lib/emotes';
-
-// const thirdPartyEmoteList = ref([] as Emote[]);
-const thirdPartyEmoteMap = ref(new Map() as Map<Emote['code'], Emote>);
-const _escapeRegex = /[-[\]{}()*+?.,\\^$|#\s]/g;
-const thirdPartyEmoteRegex = ref(/./g);
-
-function getContentForPart(part: MessagePart) {
-	return part.type === 'text' ? part.content : '';
-}
-
-function getClassForPart(part: MessagePart) {
-	const { type } = part;
-	return {
-		[`part-${type}`]: true,
-		'emote-zero-width': type === 'emote' ? part.meta.zeroWidth : false
-	};
-}
-function getStyleForPart(part: MessagePart) {
-	// if(part.type === 'emote') {
-	// 	part.
-	// }
-	return part.type !== 'text' ? part.style : {};
-}
-
-function getTitleForPart(part: MessagePart) {
-	return part.type !== 'text' ? part.title : undefined;
-}
-
-const props = defineProps<{
-	message: Message;
-}>();
-// defineEmits<{ (e: 'eventName'): void; }>();
-
-const formattedName = (() => {
-	const { displayName, username } = props.message;
-	if(!displayName) {
-		return username;
-	}
-	else if(displayName.toLowerCase() !== username) {
-		return `${displayName} (${username})`;
-	}
-	return displayName || username;
-})();
-
-const parts = ref<MessagePart[]>([]);
 
 type MessagePartTypes = 'text' | 'emote' | 'emoji' | 'cheermote';
 interface MessagePartBase<Type extends MessagePartTypes> {
@@ -102,15 +67,77 @@ type MessagePart =
 	| MessagePartEmote
 	| MessagePartEmoji;
 
+// const thirdPartyEmoteList = ref([] as Emote[]);
+const thirdPartyEmoteMap = ref(new Map() as Map<Emote['code'], Emote>);
+const _escapeRegex = /[-[\]{}()*+?.,\\^$|#\s]/g;
+const thirdPartyEmoteRegex = ref(/./g);
+
+const props = defineProps<{
+	message: Message;
+}>();
+// defineEmits<{ (e: 'eventName'): void; }>();
+
+const parts = ref<MessagePart[]>([]);
+const badges = ref<string[]>([]);
+
+const formattedName = (() => {
+	const { displayName, username } = props.message;
+	if(!displayName) {
+		return username;
+	}
+	else if(displayName.toLowerCase() !== username) {
+		return `${displayName} (${username})`;
+	}
+	return displayName || username;
+})();
+
 onMounted(async () => {
-	const list = await allThirdPartyEmotes.load(props.message.channel.slice(1));
-	thirdPartyEmoteMap.value = new Map(list.map(e => [ e.code, e ]));
-	const regexAlternates = list.map(e => e.code.replace(_escapeRegex, '\\$&'))
-	.sort((a, b) => b.length - a.length)
-	.join('|');
-	thirdPartyEmoteRegex.value = new RegExp(`(?:${regexAlternates})`, 'g');
-	parts.value = parseMessageIntoParts(props.message);
+	const channelName = props.message.channel.slice(1);
+	await Promise.all([
+		allThirdPartyEmotes.load(channelName)
+		.then(emoteList => {
+			thirdPartyEmoteMap.value = new Map(emoteList.map(e => [ e.code, e ]));
+			const regexAlternates = emoteList.map(e => e.code.replace(_escapeRegex, '\\$&'))
+			.sort((a, b) => b.length - a.length)
+			.join('|');
+			thirdPartyEmoteRegex.value = new RegExp(`(?:${regexAlternates})`, 'g');
+			parts.value = parseMessageIntoParts(props.message);
+		}),
+		twitchBadges.load(channelName)
+		.then(badgeData => {
+			badges.value = props.message.badges.reduce((p, [ name, version ]) => {
+				const badge = badgeData[name][version];
+				if(badge) {
+					p.push(badge);
+				}
+				return p;
+			}, [] as string[]);
+		}),
+	]);
 });
+
+function getContentForPart(part: MessagePart) {
+	return part.type === 'text' ? part.content : '';
+}
+
+function getClassForPart(part: MessagePart) {
+	const { type } = part;
+	return {
+		[`part-${type}`]: true,
+		'emote-zero-width': type === 'emote' ? part.meta.zeroWidth : false
+	};
+}
+
+function getStyleForPart(part: MessagePart) {
+	// if(part.type === 'emote') {
+	// 	part.
+	// }
+	return part.type !== 'text' ? part.style : {};
+}
+
+function getTitleForPart(part: MessagePart) {
+	return part.type !== 'text' ? part.title : undefined;
+}
 
 function parseMessageIntoParts(message: Message): MessagePart[] {
 	const realText = message.text.replace(/\uDB40\uDC02/g, '\u200D');
@@ -267,6 +294,32 @@ function convertTwitchEmotes(originalEmotes: TmiJS.Tags.EmotesObject, text: stri
 	& + & {
 		margin-top: 0.25rem;
 	}
+	& > div {
+		vertical-align: middle;
+	}
+}
+
+.badges {
+	display: inline-block;
+	margin-right: 0.2rem;
+	line-height: 0;
+
+	&:empty {
+		margin-right: 0;
+	}
+}
+.badge {
+	display: inline-block;
+	vertical-align: middle;
+	width: 1.125rem;
+	height: 1.125rem;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+
+	& + & {
+		margin-left: 0.125rem;
+	}
 }
 
 .name {
@@ -291,8 +344,8 @@ function convertTwitchEmotes(originalEmotes: TmiJS.Tags.EmotesObject, text: stri
 	&-emote,
 	&-emoji {
 		display: inline-block;
-		width: 24px;
-		height: 24px;
+		width: 1.5rem;
+		height: 1.5rem;
 		background-size: contain;
 		background-repeat: no-repeat;
 		background-position: center;
