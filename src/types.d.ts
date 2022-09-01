@@ -7,7 +7,7 @@ export interface Emote {
 	code: string;
 	id: string;
 	provider: 'twitch' | 'ffz' | 'bttv' | '7tv';
-	url: string;
+	url: [ string, null, null ] | [ string, string, null ] | [ string, string, string ] | [ string, null, string ];
 	width?: number;
 	height?: number;
 	isZeroWidth?: boolean;

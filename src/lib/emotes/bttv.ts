@@ -45,8 +45,9 @@ async function getGlobal(): Promise<Emote[]> {
 }
 
 function convertEmote(emote: BTTV.Emote): Emote {
+	const baseUrl = `https://cdn.betterttv.net/emote/${emote.id}`;
 	return {
-		url: `https://cdn.betterttv.net/emote/${emote.id}/1x`,
+		url: [ `${baseUrl}/1x`, `${baseUrl}/2x`, `${baseUrl}/3x` ],
 		code: emote.code,
 		id: emote.id,
 		provider: 'bttv',

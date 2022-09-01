@@ -48,8 +48,9 @@ async function getGlobal(): Promise<Emote[]> {
 }
 
 function convertEmote(emote: SevenTV.Emote): Emote {
+	const [ one, two, three ] = emote.urls.map(n => n[1]);
 	return {
-		url: emote.urls[0][1],
+		url: [ one, two, three ],
 		code: emote.name,
 		id: emote.id,
 		provider: '7tv',

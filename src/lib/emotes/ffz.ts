@@ -47,7 +47,7 @@ async function getGlobalSet(): Promise<Emote[]> {
 
 function convertEmote(emote: FFZ.Emote): Emote {
 	return {
-		url: emote.urls[1]!,
+		url: [ emote.urls[1]!, emote.urls[2], emote.urls[4] ],
 		code: emote.name,
 		id: emote.id.toString(),
 		provider: 'ffz',

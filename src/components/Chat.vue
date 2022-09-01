@@ -8,7 +8,7 @@
 		.badge(
 			v-for="(badge, i) in badges"
 			:key="i"
-			:style="{ backgroundImage: `url(${badge})` }"
+			:style="{ backgroundImage: getBadgeUrl(badge) }"
 		)
 	.name {{ formattedName }}
 	.content
@@ -66,7 +66,9 @@ type MessagePartEmoji = MessagePartGeneric<'emoji', 'style' | 'title', { provide
 type MessagePart =
 	| MessagePartText
 	| MessagePartEmote
-	| MessagePartEmoji;
+
+const fontScale = parseInt(window.getComputedStyle(document.body).getPropertyValue('font-size').slice(0, -2), 10) / 16;
+const suggestedScale: 1 | 2 | 3 = ({ 1: 1, 2: 2, 3: 3, 4: 3 } as const)[Math.floor(fontScale)] || 1;
 
 // const thirdPartyEmoteList = ref([] as Emote[]);
 const thirdPartyEmoteMap = ref(new Map() as Map<Emote['code'], Emote>);
@@ -91,6 +93,10 @@ const formattedName = (() => {
 	}
 	return displayName || username;
 })();
+
+const getBadgeUrl = (badge: string) => {
+	return `url(${badge.replace(/1$/, suggestedScale.toString())})`;
+};
 
 onMounted(async () => {
 	const channelName = props.message.channel.slice(1);
@@ -137,7 +143,15 @@ function getStyleForPart(part: MessagePart) {
 }
 
 function getTitleForPart(part: MessagePart) {
-	return part.type !== 'text' ? part.title : undefined;
+function getBestEmoteUrl(url: Emote['url']): string {
+	const scale = suggestedScale - 1;
+	if(scale === 0) {
+		return url[0];
+	}
+	else if(scale === 1) {
+		return url[1] || url[0];
+	}
+	return url[2] || url[1] || url[0];
 }
 
 function parseMessageIntoParts(message: Message): MessagePart[] {
@@ -223,42 +237,43 @@ function parseMessageIntoParts(message: Message): MessagePart[] {
 				end: match.index + m.length,
 			});
 		}
-		if(matches.length) {
-			const newParts: MessagePart[] = [];
-			const text = [ ...n.content ];
-			if(matches[0].start > 0) {
-				newParts.push({
-					type: 'text',
-					content: text.slice(0, matches[0].start).join(''),
-				});
-			}
-			for(let i = 0; i < matches.length; i++) {
-				const emote = matches[i];
-				const { end, code, url, provider } = emote;
-				const explicitSize: Partial<{ width: string; height: string; }> = {};
-				if(emote.width !== undefined && emote.height !== undefined) {
-					const scale = 24 / emote.height;
-					explicitSize.width = `${emote.width * scale}px`;
-					explicitSize.height = `${24}px`;
-				}
-				newParts.push({
-					type: 'emote',
-					style: {
-						backgroundImage: `url(${url})`,
-						...explicitSize
-					},
-					title: code,
-					meta: { provider, zeroWidth: matches[i].isZeroWidth },
-				});
-				if(end === text.length) {
-					continue;
-				}
-				const nextEmote = matches[i + 1];
-				const content = nextEmote ? text.slice(end, nextEmote.start) : text.slice(end);
-				newParts.push({ type: 'text', content: content.join('') });
-			}
-			parts.splice(i, 1, ...newParts);
+		if(!matches.length) {
+			return undefined;
 		}
+		const newParts: MessagePart[] = [];
+		const text = [ ...n.content ];
+		if(matches[0].start > 0) {
+			newParts.push({
+				type: 'text',
+				content: text.slice(0, matches[0].start).join(''),
+			});
+		}
+		for(let i = 0; i < matches.length; i++) {
+			const emote = matches[i];
+			const { end, code, url, provider } = emote;
+			const explicitSize: Partial<{ width: string; height: string; }> = {};
+			if(emote.width !== undefined && emote.height !== undefined) {
+				const scale = 1.5 / emote.height;
+				explicitSize.width = `${emote.width * scale}rem`;
+				explicitSize.height = `${1.5}rem`;
+			}
+			newParts.push({
+				type: 'emote',
+				style: {
+					backgroundImage: `url(${getBestEmoteUrl(url)})`,
+					...explicitSize
+				},
+				title: code,
+				meta: { provider, zeroWidth: matches[i].isZeroWidth },
+			});
+			if(end === text.length) {
+				continue;
+			}
+			const nextEmote = matches[i + 1];
+			const content = nextEmote ? text.slice(end, nextEmote.start) : text.slice(end);
+			newParts.push({ type: 'text', content: content.join('') });
+		}
+		parts.splice(i, 1, ...newParts);
 	}, undefined);
 	return parts;
 }
@@ -273,12 +288,13 @@ function convertTwitchEmotes(originalEmotes: TmiJS.Tags.EmotesObject, text: stri
 		};
 		const first = parseEmoteIndex(indices[0]);
 		const code = spreadText.slice(first.start, first.end).join('');
-		const base = {
+		const baseUrl = `https://static-cdn.jtvnw.net/emoticons/v2/${id}/default/dark`;
+		const base: Pick<Emote, 'code' | 'id' | 'provider' | 'url'> = {
 			code,
 			id,
 			provider: 'twitch',
-			url: `https://static-cdn.jtvnw.net/emoticons/v2/${id}/default/dark/1.0`,
-		} as const;
+			url: [ `${baseUrl}/1.0`, `${baseUrl}/2.0`, `${baseUrl}/3.0` ],
+		};
 		indices.forEach(n => {
 			p.push({
 				...parseEmoteIndex(n),
