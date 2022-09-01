@@ -11,78 +11,7 @@ import { onMounted, onUnmounted, ref } from 'vue';
 // import tmi from 'tmi.js';
 
 const tmiIsConnected = ref(false);
-const messages = ref<Message[]>([
-	// {
-	// 	channel: '#avesmhl',
-	// 	displayName: 'Alca',
-	// 	emotesTwitch: {},
-	// 	id: '124',
-	// 	text: '🌠 POGGIES 🌠 POGGIES 🌠 POGGIES 🌠 POGGIES',
-	// 	type: 'chat',
-	// 	userId: '7676884',
-	// 	username: 'alca',
-	// }
-	// {
-	// 	channel: '#alca',
-	// 	displayName: 'Alca',
-	// 	emotesTwitch: {
-	// 		'25': [
-	// 			'4-8',
-	// 			'12-16',
-	// 			'27-31'
-	// 		],
-	// 		'328626': [
-	// 			'18-25'
-	// 		]
-	// 	},
-	// 	id: '123',
-	// 	text: '123 Kappa 🌟 Kappa alcaFace Kappa 456 YooHoo ForeverAlone RainTime',
-	// 	type: 'chat',
-	// 	userId: '7676884',
-	// 	username: 'alca',
-	// }
-]);
-/*
-{
-	"badge-info": {
-		"subscriber": "62"
-	},
-	"badges": {
-		"broadcaster": "1",
-		"subscriber": "3012",
-		"turbo": "1"
-	},
-	"client-nonce": "b7cb90696d2bd75061f568ec08372534",
-	"color": "#177DE3",
-	"display-name": "Alca",
-	"emotes": {
-		"25": [
-			"4-8",
-			"12-16",
-			"27-31"
-		],
-		"328626": [
-			"18-25"
-		]
-	},
-	"first-msg": false,
-	"flags": null,
-	"id": "16030dc3-4f43-4eae-9fd9-fab2bceed4a1",
-	"mod": false,
-	"returning-chatter": false,
-	"room-id": "7676884",
-	"subscriber": true,
-	"tmi-sent-ts": "1661835840291",
-	"turbo": true,
-	"user-id": "7676884",
-	"user-type": null,
-	"emotes-raw": "25:4-8,12-16,27-31/328626:18-25",
-	"badge-info-raw": "subscriber/62",
-	"badges-raw": "broadcaster/1,subscriber/3012,turbo/1",
-	"username": "alca",
-	"message-type": "chat"
-}
-*/
+const messages = ref<Message[]>([]);
 function addMessage(message: Message) {
 	if(messages.value.length > 15) {
 		messages.value.shift();
