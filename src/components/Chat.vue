@@ -1,5 +1,7 @@
 <template lang="pug">
-.chat-line
+.chat-line(
+	:style="{ '--name-color': message.tags?.color }"
+)
 	//- TODO: Badges
 	.badges
 		.badge(
@@ -7,10 +9,8 @@
 			:key="i"
 			:style="{ backgroundImage: `url(${badge})` }"
 		)
-	.name(
-		:style="{ color: message?.tags?.color || 'black' }"
-	) {{ formattedName }}
-	.content
+	.name {{ formattedName }}
+	.content(:class="{ 'is-action': message.type === 'action' }")
 		.part(
 			v-for="part in parts"
 			:class="getClassForPart(part)"
@@ -291,6 +291,8 @@ function convertTwitchEmotes(originalEmotes: TmiJS.Tags.EmotesObject, text: stri
 </script>
 <style lang="scss" scoped>
 .chat-line {
+	--name-color: #00b0f4;
+
 	& + & {
 		margin-top: 0.25rem;
 	}
@@ -325,6 +327,7 @@ function convertTwitchEmotes(originalEmotes: TmiJS.Tags.EmotesObject, text: stri
 .name {
 	font-weight: bold;
 	display: inline-block;
+	color: var(--name-color);
 
 	&:after {
 		content: ':';
@@ -334,6 +337,11 @@ function convertTwitchEmotes(originalEmotes: TmiJS.Tags.EmotesObject, text: stri
 
 .content {
 	display: inline-block;
+
+	&.is-action {
+		font-style: italic;
+		color: var(--name-color);
+	}
 }
 
 .part {

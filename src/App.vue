@@ -43,7 +43,7 @@ onMounted(() => {
 	});
 	tmiClient.on('message', (channel, tags, text, _self) => {
 		addMessage({
-			type: 'chat',
+			type: tags['message-type'] === 'chat' ? 'chat' : 'action',
 			id: tags.id,
 			text,
 			channel,
