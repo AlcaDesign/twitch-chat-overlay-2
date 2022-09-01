@@ -1,7 +1,7 @@
 import * as bttv from '@/lib/emotes/bttv';
 import * as ffz from '@/lib/emotes/ffz';
 import * as seventv from '@/lib/emotes/7tv';
-import * as cache from '@/lib/emotes/cache';
+import * as cache from '@/lib/cache';
 import * as helix from '../helix';
 import type { Emote } from '@/types';
 

@@ -1,5 +1,5 @@
 import type { Emote } from '@/types';
-import * as cache from './cache';
+import * as cache from '../cache';
 
 export async function load(twitchLogin?: string): Promise<Emote[]> {
 	if(twitchLogin) {
