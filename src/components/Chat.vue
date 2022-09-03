@@ -66,6 +66,7 @@ type MessagePartEmoji = MessagePartGeneric<'emoji', 'style' | 'title', { provide
 type MessagePart =
 	| MessagePartText
 	| MessagePartEmote
+	| MessagePartEmoji
 
 const fontScale = parseInt(window.getComputedStyle(document.body).getPropertyValue('font-size').slice(0, -2), 10) / 16;
 const suggestedScale: 1 | 2 | 3 = ({ 1: 1, 2: 2, 3: 3, 4: 3 } as const)[Math.floor(fontScale)] || 1;
