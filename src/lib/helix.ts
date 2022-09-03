@@ -30,6 +30,38 @@ export async function getBadgesChannel(channelId: string): Promise<Helix.BadgesS
 	return await makeRequest(`chat/badges?broadcaster_id=${channelId}&simplify=true`, 1000 * 60 * 60);
 }
 
+export async function getChatColor(userId: string | string[]): Promise<Helix.ChatColorSimple> {
+	if(!Array.isArray(userId)) {
+		userId = [ userId ];
+	}
+	const cacheKeyBase = `api:chat-color`;
+	const formKey = (id: string) => `${cacheKeyBase}:${id}`;
+	const refetch: string[] = [];
+	const cached: Record<string, string> = {};
+	for(const id of userId) {
+		const cachedData = cache.get(formKey(id));
+		if(cachedData) {
+			cached[id] = await cachedData;
+		}
+		else {
+			refetch.push(id);
+		}
+	}
+	if(refetch.length) {
+		const userIdList = new URLSearchParams(refetch.map(id => [ 'user_id', id ]));
+		const resData: Helix.ChatColorSimple = await makeRequest(`chat/color?${userIdList}&colors=true`, 0);
+		for(const id of userId) {
+			if(!resData[id]) {
+				resData[id] = '';
+			}
+			cached[id] = resData[id];
+			const prom = Promise.resolve(resData[id]);
+			cache.add(formKey(id), prom, 1000 * 60 * 60);
+		}
+	}
+	return cached;
+}
+
 export namespace Helix {
 	export interface User {
 		id: string;
@@ -57,5 +89,8 @@ export namespace Helix {
 		export interface BadgesData {
 			badges: BadgeSet;
 		}
+	}
+	export interface ChatColorSimple {
+		[userId: string]: string;
 	}
 }
