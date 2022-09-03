@@ -19,13 +19,18 @@ export function cull() {
 	}
 }
 
-export function add(key: string, res: Promise<any>, expires: number = 1000 * 60 * 5) {
-	cache.set(key, { expires: Date.now() + expires, res });
+export function add(key: string, res: Promise<any>, expires: number | null = 1000 * 60 * 5) {
+	cache.set(key, {
+		expires: expires ? Date.now() + expires : Infinity,
+		res,
+	});
 	return res;
 }
 
 export function get(key: string) {
-	if(!cache.has(key)) return null;
+	if(!cache.has(key)) {
+		return null;
+	}
 	const now = Date.now();
 	const { expires, res } = cache.get(key)!;
 	if(expires <= now) {
