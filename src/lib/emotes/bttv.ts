@@ -1,6 +1,8 @@
 import type { Emote } from '@/types';
 import * as cache from '../cache';
 
+const apiBase = `https://api.betterttv.net/3/cached`;
+
 export async function load(twitchId?: string): Promise<Emote[]> {
 	if(twitchId) {
 		return getChannelByTwitchId(twitchId);
@@ -8,14 +10,14 @@ export async function load(twitchId?: string): Promise<Emote[]> {
 	return getGlobal();
 }
 
-function makeRequest(endpoint: string) {
-	const url = `https://api.betterttv.net/3/cached/${endpoint}`;
+function makeRequest(endpoint: string, expires?: number) {
+	const url = `${apiBase}/${endpoint}`;
 	const cachedData = cache.get(url);
 	if(cachedData) {
 		return cachedData;
 	}
 	const prom = fetch(url).then(res => res.json());
-	cache.add(url, prom);
+	cache.add(url, prom, expires);
 	return prom;
 }
 
@@ -41,7 +43,7 @@ async function getGlobal(): Promise<Emote[]> {
 	if('message' in data) {
 		return [];
 	}
-	return data.map(convertEmote);
+	return data.map(convertEmote, 1000 * 60 * 60);
 }
 
 function convertEmote(emote: BTTV.Emote): Emote {

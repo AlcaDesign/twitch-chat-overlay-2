@@ -1,6 +1,8 @@
 import type { Emote } from '@/types';
 import * as cache from '../cache';
 
+const apiBase = 'https://api.7tv.app/v2';
+
 export async function load(twitchLogin?: string): Promise<Emote[]> {
 	if(twitchLogin) {
 		return getChannelByTwitchLogin(twitchLogin);
@@ -8,8 +10,8 @@ export async function load(twitchLogin?: string): Promise<Emote[]> {
 	return getGlobal();
 }
 
-function makeRequest(endpoint: string) {
-	const url = `https://api.7tv.app/v2/${endpoint}`;
+function makeRequest(endpoint: string, expires?: number) {
+	const url = `${apiBase}/${endpoint}`;
 	const cachedData = cache.get(url);
 	if(cachedData) {
 		return cachedData;
@@ -21,7 +23,7 @@ function makeRequest(endpoint: string) {
 		},
 	})
 	.then(res => res.json());
-	cache.add(url, prom);
+	cache.add(url, prom, expires);
 	return prom;
 }
 
@@ -37,7 +39,7 @@ async function getChannelByTwitchLogin(twitchLogin: string): Promise<Emote[]> {
 }
 
 async function _getGlobal(): Promise<SevenTV.GetGlobal | SevenTV.ApiError> {
-	return await makeRequest('emotes/global');
+	return await makeRequest('emotes/global', 1000 * 60 * 60);
 }
 async function getGlobal(): Promise<Emote[]> {
 	const data = await _getGlobal();

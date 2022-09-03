@@ -1,6 +1,8 @@
 import type { Emote } from '@/types';
 import * as cache from '../cache';
 
+const apiBase = 'https://api.frankerfacez.com/v1';
+
 export async function load(twitchId?: string): Promise<Emote[]> {
 	if(twitchId) {
 		return getChannelByTwitchId(twitchId);
@@ -9,7 +11,7 @@ export async function load(twitchId?: string): Promise<Emote[]> {
 }
 
 function makeRequest(endpoint: string, expires?: number): Promise<any> {
-	const url = `https://api.frankerfacez.com/v1/${endpoint}`;
+	const url = `${apiBase}/${endpoint}`;
 	const cachedData = cache.get(url);
 	if(cachedData) {
 		return cachedData;
@@ -35,7 +37,7 @@ async function getChannelByTwitchId(twitchId: string): Promise<Emote[]> {
 }
 
 async function _getGlobalSet(): Promise<FFZ.GetGlobalSet | FFZ.ApiError> {
-	return await makeRequest('set/global');
+	return await makeRequest('set/global', 1000 * 60 * 60);
 }
 async function getGlobalSet(): Promise<Emote[]> {
 	const data = await _getGlobalSet();
