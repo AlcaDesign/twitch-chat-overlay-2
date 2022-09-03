@@ -8,6 +8,8 @@
 import Chat from './components/Chat.vue';
 import type { Message } from './components/Chat.vue';
 import { onMounted, onUnmounted, ref } from 'vue';
+import * as allThirdPartyEmotes from '@/lib/emotes';
+import * as twitchBadges from '@/lib/badges';
 // import tmi from 'tmi.js';
 
 const tmiIsConnected = ref(false);
@@ -40,6 +42,13 @@ onMounted(() => {
 	});
 	tmiClient.on('connected', () => {
 		tmiIsConnected.value = true;
+	});
+	tmiClient.on('join', (channel, _username, self) => {
+		if(self) {
+			const chan = channel.slice(1);
+			allThirdPartyEmotes.load(chan);
+			twitchBadges.load(chan);
+		}
 	});
 	tmiClient.on('message', (channel, tags, text, _self) => {
 		addMessage({

@@ -82,6 +82,7 @@ export namespace TmiJS {
 	interface Events {
 		connected: [ server: string, port: number ];
 		disconnected: [ reason: string ];
+		join: [ channel: string, username: string, self: boolean ];
 		message: [ channel: `#${string}`, tags: Tags.Message, message: string, self: boolean ];
 		cheer: [ channel: `#${string}`, tags: Tags.Cheer, message: string ];
 	}
