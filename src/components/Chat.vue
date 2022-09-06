@@ -166,7 +166,10 @@ function parseMessageIntoParts(message: Message): MessagePart[] {
 		parts.splice(0);
 		emotes.sort((a, b) => a.start - b.start);
 		if(emotes[0].start > 0) {
-			parts.push({ type: 'text', content: text.slice(0, emotes[0].start).join('') });
+			const content = text.slice(0, emotes[0].start).join('').trim();
+			if(content) {
+				parts.push({ type: 'text', content });
+			}
 		}
 		for(let i = 0; i < emotes.length; i++) {
 			const emote = emotes[i];
@@ -183,8 +186,10 @@ function parseMessageIntoParts(message: Message): MessagePart[] {
 				continue;
 			}
 			const nextEmote = emotes[i + 1];
-			const content = nextEmote ? text.slice(end, nextEmote.start) : text.slice(end);
-			parts.push({ type: 'text', content: content.join('') });
+			const content = (nextEmote ? text.slice(end, nextEmote.start) : text.slice(end)).join('').trim();
+			if(content) {
+				parts.push({ type: 'text', content });
+			}
 		}
 	}
 	parts.reduceRight((_, n, i) => {
@@ -244,10 +249,10 @@ function parseMessageIntoParts(message: Message): MessagePart[] {
 		const newParts: MessagePart[] = [];
 		const text = [ ...n.content ];
 		if(matches[0].start > 0) {
-			newParts.push({
-				type: 'text',
-				content: text.slice(0, matches[0].start).join(''),
-			});
+			const content = text.slice(0, matches[0].start).join('').trim();
+			if(content) {
+				newParts.push({ type: 'text', content, });
+			}
 		}
 		for(let i = 0; i < matches.length; i++) {
 			const emote = matches[i];
@@ -271,8 +276,10 @@ function parseMessageIntoParts(message: Message): MessagePart[] {
 				continue;
 			}
 			const nextEmote = matches[i + 1];
-			const content = nextEmote ? text.slice(end, nextEmote.start) : text.slice(end);
-			newParts.push({ type: 'text', content: content.join('') });
+			const content = (nextEmote ? text.slice(end, nextEmote.start) : text.slice(end)).join('').trim();
+			if(content) {
+				newParts.push({ type: 'text', content });
+			}
 		}
 		parts.splice(i, 1, ...newParts);
 	}, undefined);
