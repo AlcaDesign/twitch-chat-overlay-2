@@ -74,4 +74,14 @@ onUnmounted(() => {
 });
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+body {
+	background: hsl(0, 0%, 8%);
+	color: hsl(0, 0%, 100%);
+}
+.chat-root {
+	position: fixed;
+	bottom: 0.2rem;
+	left: 0.2rem;
+}
+</style>
