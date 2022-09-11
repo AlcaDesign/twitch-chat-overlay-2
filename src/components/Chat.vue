@@ -142,10 +142,7 @@ function getClassForPart(part: MessagePart) {
 }
 
 function getStyleForPart(part: MessagePart) {
-	// if(part.type === 'emote') {
-	// 	part.
-	// }
-	return part.type !== 'text' ? part.style : {};
+	return 'style' in part ? part.style : {};
 }
 
 function getTitleForPart(part: MessagePart) {
