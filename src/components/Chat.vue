@@ -42,7 +42,7 @@ export interface Message {
 	badges: [ string, string ][];
 }
 
-type MessagePartTypes = 'text' | 'emote' | 'emoji' | 'cheermote';
+type MessagePartTypes = 'text' | 'mention' | 'emote' | 'emoji' | 'cheermote';
 interface MessagePartBase<Type extends MessagePartTypes> {
 	type: Type;
 }
@@ -60,16 +60,19 @@ type MessagePartGeneric<
 	& Pick<MessagePartPieces, Props>
 	& (Meta extends Record<string, any> ? { meta: Meta } : {});
 type MessagePartText = MessagePartGeneric<'text', 'content'>;
+type MessagePartMention = MessagePartGeneric<'mention', 'content' | 'style'>;
 type MessagePartEmote = MessagePartGeneric<
 	'emote',
 	'style' | 'title',
 	{ provider: EmoteInUse['provider']; zeroWidth?: boolean; }
 >;
 type MessagePartEmoji = MessagePartGeneric<'emoji', 'style' | 'title', { provider: 'twemoji' }>;
+// TODO: Cheermote
 type MessagePart =
 	| MessagePartText
 	| MessagePartEmote
 	| MessagePartEmoji
+	| MessagePartMention;
 
 const fontScale = parseInt(window.getComputedStyle(document.body).getPropertyValue('font-size').slice(0, -2), 10) / 16;
 const suggestedScale: 1 | 2 | 3 = ({ 1: 1, 2: 2, 3: 3, 4: 3 } as const)[Math.floor(fontScale)] || 1;
@@ -130,7 +133,7 @@ onMounted(async () => {
 });
 
 function getContentForPart(part: MessagePart) {
-	return part.type === 'text' ? part.content : '';
+	return 'content' in part ? part.content : '';
 }
 
 function getClassForPart(part: MessagePart) {
@@ -234,6 +237,54 @@ function parseMessageIntoParts(message: Message): MessagePart[] {
 		parts.splice(i, 1, ...newParts);
 	}, undefined);
 
+	// Parse mentions:
+	parts.reduceRight((_, n, i) => {
+		if(n.type !== 'text' || !n.content.trim()) {
+			return undefined;
+		}
+		const reg = /^@([a-zA-Z0-9_]{1,25})/g;
+		const str = n.content;
+		let match: RegExpExecArray | null;
+		const matches: { start: number; end: number; name: string; }[] = [];
+		while((match = reg.exec(str)) !== null) {
+			const [ m, name ] = match;
+			matches.push({
+				start: match.index,
+				end: match.index + m.length,
+				name,
+			});
+		}
+		if(!matches.length) {
+			return undefined;
+		}
+		const newParts: MessagePart[] = [];
+		const text = n.content;
+		if(matches[0].start > 0) {
+			const content = text.slice(0, matches[0].start).trim();
+			if(content) {
+				newParts.push({ type: 'text', content });
+			}
+		}
+		for(let i = 0; i < matches.length; i++) {
+			const { end, name } = matches[i];
+			newParts.push({
+				type: 'mention',
+				content: `@${name}`,
+				style: {
+					color: 'red',
+					fontWeight: 'bold',
+				}
+			});
+			if(end === text.length) {
+				continue;
+			}
+			const nextMatch = matches[i + 1];
+			const content = (nextMatch ? text.slice(end, nextMatch.start) : text.slice(end)).trim();
+			newParts.push({ type: 'text', content });
+		}
+		parts.splice(i, 1, ...newParts);
+	}, undefined);
+
 	// Parse third party emotes:
 	parts.reduceRight((_, n, i) => {
 		if(n.type !== 'text' || !n.content.trim()) {
@@ -259,7 +310,7 @@ function parseMessageIntoParts(message: Message): MessagePart[] {
 		if(matches[0].start > 0) {
 			const content = text.slice(0, matches[0].start).join('').trim();
 			if(content) {
-				newParts.push({ type: 'text', content, });
+				newParts.push({ type: 'text', content });
 			}
 		}
 		for(let i = 0; i < matches.length; i++) {
@@ -386,7 +437,8 @@ function convertTwitchEmotes(originalEmotes: TmiJS.Tags.EmotesObject, text: stri
 	display: inline;
 	vertical-align: middle;
 
-	&-text {}
+	&-text,
+	&-mention {}
 	&-emote,
 	&-emoji {
 		display: inline-block;
@@ -396,5 +448,26 @@ function convertTwitchEmotes(originalEmotes: TmiJS.Tags.EmotesObject, text: stri
 		background-repeat: no-repeat;
 		background-position: center;
 	}
+	& + & {
+		margin-left: 0.25rem;
+	}
+	&-emote + &-emote {
+		margin-left: 0rem;
+	}
+	// &-text + &-mention,
+	// &-mention + &-text,
+	// &-mention + &-mention,
+	// &-emote + &-text,
+	// &-emote + &-mention,
+	// &-text + &-emote,
+	// &-text + &-emoji,
+	// &-mention + &-emote,
+	// &-mention + &-emoji {
+	// 	margin-left: 0.25rem;
+	// }
+	// &-text + :not(&-emote),
+	// &-emote + :not(&-emote) {
+	// 	margin-left: 0.25rem;
+	// }
 }
 </style>
