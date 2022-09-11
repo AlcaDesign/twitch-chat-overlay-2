@@ -149,6 +149,9 @@ function getStyleForPart(part: MessagePart) {
 }
 
 function getTitleForPart(part: MessagePart) {
+	return 'title' in part ? part.title : undefined;
+}
+
 function getBestEmoteUrl(url: Emote['url']): string {
 	const scale = suggestedScale - 1;
 	if(scale === 0) {
