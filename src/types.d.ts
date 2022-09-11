@@ -64,6 +64,11 @@ export namespace TmiJS {
 			'message-type': 'chat' | 'action' | 'whisper';
 			/** @deprecated */
 			mod: boolean;
+			'reply-parent-display-name'?: string;
+			'reply-parent-msg-body'?: string;
+			'reply-parent-msg-id'?: string;
+			'reply-parent-user-id'?: string;
+			'reply-parent-user-login'?: string;
 			'returning-chatter': boolean;
 			'room-id': string;
 			subscriber: boolean;

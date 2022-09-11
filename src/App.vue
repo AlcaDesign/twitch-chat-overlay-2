@@ -1,7 +1,8 @@
 <template lang="pug">
 .connection {{ tmiIsConnected ? 'Connected' : 'Disconnected' }}
 .chat-root
-	Chat(v-for="message in messages" :key="message.id" :message="message")
+	TransitionGroup(name="chat-messages" tag="div")
+		Chat(v-for="message in messages" :key="message.id" :message="message")
 </template>
 
 <script setup lang="ts">
@@ -83,5 +84,23 @@ body {
 	position: fixed;
 	bottom: 0.2rem;
 	left: 0.2rem;
+}
+.chat-messages {
+	&-enter-active,
+	&-leave-active {
+		overflow: hidden;
+		transition:
+			opacity 120ms ease-out,
+			transform 240ms ease-out;
+	}
+	&-enter-from {
+		opacity: 0;
+		transform: translateX(100px);
+	}
+	&-enter-to {
+	}
+	&-leave-to {
+		opacity: 0;
+	}
 }
 </style>

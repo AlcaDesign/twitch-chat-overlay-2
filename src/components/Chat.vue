@@ -12,6 +12,7 @@
 		)
 	.name {{ formattedName }}
 	.content
+		Thread(v-if="isThread")
 		.part(
 			v-for="part in parts"
 			:class="getClassForPart(part)"
@@ -25,6 +26,8 @@ import * as twemoji from 'twemoji-parser';
 import type { Emote, EmoteInUse, TmiJS } from '@/types';
 import * as allThirdPartyEmotes from '@/lib/emotes';
 import * as twitchBadges from '@/lib/badges';
+// import * as helix from '@/lib/helix';
+import Thread from './icon/twitch/Thread.vue';
 
 export interface Message {
 	type: 'system' | 'chat' | 'action' | 'cheer' | 'announcement' | 'sub' | 'resub' | 'raid';
@@ -95,6 +98,8 @@ const formattedName = (() => {
 	return displayName || username;
 })();
 
+const isThread = 'reply-parent-msg-id' in props.message.tags;
+
 const getBadgeUrl = (badge: string) => {
 	return `url(${badge.replace(/1$/, suggestedScale.toString())})`;
 };
@@ -162,6 +167,8 @@ function parseMessageIntoParts(message: Message): MessagePart[] {
 	const { emotesTwitch } = message;
 	const emotes = convertTwitchEmotes(emotesTwitch, realText);
 	// if(message.type === 'cheer') {}
+
+	// Parse Twitch emotes:
 	if(emotes.length) {
 		parts.splice(0);
 		emotes.sort((a, b) => a.start - b.start);
@@ -192,6 +199,8 @@ function parseMessageIntoParts(message: Message): MessagePart[] {
 			}
 		}
 	}
+
+	// Parse emoji:
 	parts.reduceRight((_, n, i) => {
 		if(n.type !== 'text' || !n.content.trim()) {
 			return undefined;
@@ -224,9 +233,9 @@ function parseMessageIntoParts(message: Message): MessagePart[] {
 				newParts.push({ type: 'text', content });
 			}
 			parts.splice(i, 1, ...newParts);
-		}
-		return undefined;
 	}, undefined);
+
+	// Parse third party emotes:
 	parts.reduceRight((_, n, i) => {
 		if(n.type !== 'text' || !n.content.trim()) {
 			return undefined;
