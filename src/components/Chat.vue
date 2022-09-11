@@ -206,33 +206,32 @@ function parseMessageIntoParts(message: Message): MessagePart[] {
 			return undefined;
 		}
 		const emojiList = twemoji.parse(n.content, { assetType: 'svg' });
-		if(emojiList.length) {
-			const newParts: MessagePart[] = [];
-			const text = n.content;
-			if(emojiList[0].indices[0] > 0) {
-				newParts.push({
-					type: 'text',
-					content: text.slice(0, emojiList[0].indices[0]),
-				});
-			}
-			for(let i = 0; i < emojiList.length; i++) {
-				const { indices: [ _start, end ], text: code, url } = emojiList[i];
-				newParts.push({
-					type: 'emoji',
-					style: {
-						backgroundImage: `url(${url})`,
-					},
-					title: code,
-					meta: { provider: 'twemoji' },
-				});
-				// if(end === text.length) {
-				// 	continue;
-				// }
-				const nextEmoji = emojiList[i + 1];
-				const content = nextEmoji ? text.slice(end, nextEmoji.indices[0]) : text.slice(end);
+		if(!emojiList.length) {
+			return undefined;
+		}
+		const newParts: MessagePart[] = [];
+		const text = n.content;
+		if(emojiList[0].indices[0] > 0) {
+			const content = text.slice(0, emojiList[0].indices[0]).trim();
+			if(content) {
 				newParts.push({ type: 'text', content });
 			}
-			parts.splice(i, 1, ...newParts);
+		}
+		for(let i = 0; i < emojiList.length; i++) {
+			const { indices: [ _start, end ], text: code, url } = emojiList[i];
+			newParts.push({
+				type: 'emoji',
+				style: {
+					backgroundImage: `url(${url})`,
+				},
+				title: code,
+				meta: { provider: 'twemoji' },
+			});
+			const nextEmoji = emojiList[i + 1];
+			const content = nextEmoji ? text.slice(end, nextEmoji.indices[0]) : text.slice(end);
+			newParts.push({ type: 'text', content });
+		}
+		parts.splice(i, 1, ...newParts);
 	}, undefined);
 
 	// Parse third party emotes:
