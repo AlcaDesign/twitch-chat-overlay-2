@@ -117,7 +117,6 @@ onMounted(async () => {
 			.sort((a, b) => b.length - a.length)
 			.join('|');
 			thirdPartyEmoteRegex.value = new RegExp(`(?:^|\\b)(?:${regexAlternates})(?:$|\\b)`, 'g');
-			parts.value = parseMessageIntoParts(props.message);
 		}),
 		twitchBadges.load(channelName)
 		.then(badgeData => {
@@ -130,6 +129,7 @@ onMounted(async () => {
 			}, [] as string[]);
 		}),
 	]);
+	parts.value = parseMessageIntoParts(props.message);
 });
 
 function getContentForPart(part: MessagePart) {
