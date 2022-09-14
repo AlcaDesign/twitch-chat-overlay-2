@@ -19,15 +19,15 @@ async function makeRequest(endpoint: string, expires?: number) {
 }
 
 export async function getUserByLogin(login: string): Promise<{ user: Helix.User; }> {
-	return await makeRequest(`users?login=${login}&user=true`, 1000 * 60 * 60);
+	return await makeRequest(`users?login=${login}&user=true`, 1000 * 60 * 60 * 2);
 }
 
 export async function getBadgesGlobal(): Promise<Helix.BadgesSimple.BadgesData> {
-	return await makeRequest(`chat/badges/global?simplify=true`, 1000 * 60 * 60);
+	return await makeRequest(`chat/badges/global?simplify=true`, 1000 * 60 * 60 * 4);
 }
 
 export async function getBadgesChannel(channelId: string): Promise<Helix.BadgesSimple.BadgesData> {
-	return await makeRequest(`chat/badges?broadcaster_id=${channelId}&simplify=true`, 1000 * 60 * 60);
+	return await makeRequest(`chat/badges?broadcaster_id=${channelId}&simplify=true`, 1000 * 60 * 60 * 2);
 }
 
 export async function getChatColor(userId: string | string[]): Promise<Helix.ChatColorSimple> {
