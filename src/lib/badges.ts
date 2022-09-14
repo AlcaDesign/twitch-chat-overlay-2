@@ -1,19 +1,19 @@
 import * as cache from '@/lib/cache';
 import * as helix from './helix';
 
-export function load(twitchLogin: string): Promise<Record<string, Record<string, string>>> {
+export function load(twitchLogin: string, twitchId?: string): Promise<Record<string, Record<string, string>>> {
 	const cacheKey = `badges:final:${twitchLogin}`;
 	const cachedBadges = cache.get(cacheKey);
 	if(cachedBadges) {
 		return cachedBadges;
 	}
-	const prom = helix.getUserByLogin(twitchLogin)
-	.then(async ({ user: { id: twitchId } }) => {
+	const prom = helix.resolveIdFromName(twitchLogin, twitchId)
+	.then(async id => {
 		const [ bg, bc ] = await Promise.all([
 			helix.getBadgesGlobal(),
-			helix.getBadgesChannel(twitchId),
+			helix.getBadgesChannel(id),
 		]);
-		const output: Record<string, Record<string, string>> = Object.entries(bg.badges).reduce((p, [ set, setBadges ]) => {
+		const output = Object.entries(bg.badges).reduce((p, [ set, setBadges ]) => {
 			p[set] = { ...setBadges };
 			return p;
 		}, {} as Record<string, Record<string, string>>);

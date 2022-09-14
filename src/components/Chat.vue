@@ -109,8 +109,9 @@ const getBadgeUrl = (badge: string) => {
 
 onMounted(async () => {
 	const channelName = props.message.channel.slice(1);
+	const channelId = props.message.tags['room-id'];
 	await Promise.all([
-		allThirdPartyEmotes.load(channelName)
+		allThirdPartyEmotes.load(channelName, channelId)
 		.then(emoteList => {
 			thirdPartyEmoteMap.value = new Map(emoteList.map(e => [ e.code, e ]));
 			const regexAlternates = emoteList.map(e => e.code.replace(_escapeRegex, '\\$&'))
@@ -118,7 +119,7 @@ onMounted(async () => {
 			.join('|');
 			thirdPartyEmoteRegex.value = new RegExp(`(?:^|\\b)(?:${regexAlternates})(?:$|\\b)`, 'g');
 		}),
-		twitchBadges.load(channelName)
+		twitchBadges.load(channelName, channelId)
 		.then(badgeData => {
 			badges.value = props.message.badges.reduce((p, [ name, version ]) => {
 				const badge = badgeData[name][version];

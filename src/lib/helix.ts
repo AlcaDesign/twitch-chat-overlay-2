@@ -62,6 +62,14 @@ export async function getChatColor(userId: string | string[]): Promise<Helix.Cha
 	return cached;
 }
 
+export async function resolveIdFromName(name: string, id?: string): Promise<string> {
+	if(id) {
+		return id;
+	}
+	const { user: { id: resolvedId } } = await getUserByLogin(name);
+	return resolvedId;
+}
+
 export namespace Helix {
 	export interface User {
 		id: string;
