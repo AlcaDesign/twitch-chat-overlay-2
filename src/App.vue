@@ -6,6 +6,7 @@
 </template>
 
 <script setup lang="ts">
+import type { TmiJS } from './types';
 import Chat from './components/Chat.vue';
 import type { Message } from './components/Chat.vue';
 import { onMounted, onUnmounted, ref } from 'vue';
@@ -39,19 +40,30 @@ onMounted(() => {
 	}
 	tmiIsConnected.value = tmiClient._isConnected();
 	tmiClient.on('disconnected', () => {
+		console.log('Disconnected from Twitch');
 		tmiIsConnected.value = false;
 	});
 	tmiClient.on('connected', () => {
+		console.log('Connected to Twitch');
 		tmiIsConnected.value = true;
 	});
-	tmiClient.on('join', (channel, _username, self) => {
-		if(self) {
-			const chan = channel.slice(1);
-			allThirdPartyEmotes.load(chan);
-			twitchBadges.load(chan);
+	tmiClient.on('join', async (channel, _username, self) => {
+		if(!self) {
+			return;
+		}
+		console.log('Joined channel', channel);
+		const chan = channel.slice(1);
+		try {
+			await Promise.all([
+				allThirdPartyEmotes.load(chan),
+				twitchBadges.load(chan),
+				twitchCheermotes.load(chan),
+			]);
+		} catch(e) {
+			console.error(e);
 		}
 	});
-	const onMessage: (...args: TmiJS.Events['message'] | TmiJS.Events['announcement']) => void = (channel, tags, text, _self?: boolean, _color?: string) => {
+	const onMessage: (...args: TmiJS.Events['message'] | TmiJS.Events['cheer'] | TmiJS.Events['announcement']) => void = (channel, tags, text, _self?: boolean, _color?: string) => {
 		addMessage({
 			type: tags['message-type'],
 			id: tags.id,
@@ -70,6 +82,7 @@ onMounted(() => {
 		});
 	};
 	tmiClient.on('message', onMessage);
+	tmiClient.on('cheer', onMessage);
 	tmiClient.on('announcement', onMessage);
 });
 onUnmounted(() => window.tmiClient?.removeAllListeners());

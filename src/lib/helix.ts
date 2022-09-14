@@ -62,6 +62,10 @@ export async function getChatColor(userId: string | string[]): Promise<Helix.Cha
 	return cached;
 }
 
+export async function getCheermotes(userId: string): Promise<Helix.CheermotesSimple> {
+	return await makeRequest(`bits/cheermotes?broadcaster_id=${userId}&prefixes=true`, 1000 * 60 * 60 * 12);
+}
+
 export async function resolveIdFromName(name: string, id?: string): Promise<string> {
 	if(id) {
 		return id;
@@ -100,5 +104,8 @@ export namespace Helix {
 	}
 	export interface ChatColorSimple {
 		[userId: string]: string;
+	}
+	export interface CheermotesSimple {
+		prefixes: string[];
 	}
 }
