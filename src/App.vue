@@ -51,15 +51,15 @@ onMounted(() => {
 			twitchBadges.load(chan);
 		}
 	});
-	tmiClient.on('message', (channel, tags, text, _self) => {
+	const onMessage: (...args: TmiJS.Events['message'] | TmiJS.Events['announcement']) => void = (channel, tags, text, _self?: boolean, _color?: string) => {
 		addMessage({
-			type: tags['message-type'] === 'chat' ? 'chat' : 'action',
+			type: tags['message-type'],
 			id: tags.id,
 			text,
 			channel,
 			userId: tags['user-id'],
 			displayName: tags['display-name'],
-			username: tags.username,
+			username: 'username' in tags ? tags.username : tags.login,
 			// emotes: convertTwitchEmotes(tags.emotes ?? {}, text),
 			emotesTwitch: tags.emotes ?? {},
 			tags,
@@ -68,11 +68,11 @@ onMounted(() => {
 				return [ name, version ];
 			}),
 		});
-	});
+	};
+	tmiClient.on('message', onMessage);
+	tmiClient.on('announcement', onMessage);
 });
-onUnmounted(() => {
-	window.tmiClient?.removeAllListeners();
-});
+onUnmounted(() => window.tmiClient?.removeAllListeners());
 </script>
 
 <style lang="scss">

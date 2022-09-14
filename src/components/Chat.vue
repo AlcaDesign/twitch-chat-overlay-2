@@ -38,7 +38,7 @@ export interface Message {
 	displayName: string;
 	text: string;
 	emotesTwitch: TmiJS.Tags.EmotesObject;
-	tags: TmiJS.Tags.Message;
+	tags: TmiJS.Tags.Message | TmiJS.Tags.Announcement;
 	badges: [ string, string ][];
 }
 

@@ -58,10 +58,11 @@ export namespace TmiJS {
 			color: `#${string}`;
 			'display-name': string;
 			emotes: EmotesObject | null;
+			'emotes-raw'?: string;
 			'first-msg': boolean;
 			flags: string | null;
 			id: string;
-			'message-type': 'chat' | 'action' | 'whisper';
+			'message-type': 'chat' | 'action'; // | 'whisper';
 			/** @deprecated */
 			mod?: boolean;
 			'reply-parent-display-name'?: string;
@@ -83,19 +84,48 @@ export namespace TmiJS {
 		export interface Cheer extends Message {
 			bits: number;
 		}
+		// @badge-info=subscriber/51;badges=moderator/1,subscriber/48,partner/1;color=#DAA520;display-name=C3PO;emotes=;flags=;id=5e2cfe30-a312-4f3a-9bf5-1d0421d26b6c;login=c3po;mod=1;msg-id=announcement;msg-param-color=PRIMARY;room-id=151819490;subscriber=1;system-msg=;tmi-sent-ts=1663140826105;user-id=200276677;user-type=mod :tmi.twitch.tv USERNOTICE #keeoh :Prediction Ended! The result was HEADS, starting a new prediction!
+		// @badge-info=subscriber/51;badges=moderator/1,subscriber/48,partner/1;color=#DAA520;display-name=C3PO;emotes=;flags=;id=48671ef7-f56f-4dfe-a44f-70de7c21dab9;login=c3po;mod=1;msg-id=announcement;room-id=151819490;subscriber=1;system-msg=;tmi-sent-ts=1663142287862;user-id=200276677;user-type=mod :tmi.twitch.tv USERNOTICE #keeoh :Prediction Ended! The result was HEADS, starting a new prediction!
+		export interface Announcement {
+			'badge-info'?: BadgeInfo;
+			'badge-info-raw'?: string;
+			badges?: Badges;
+			'badges-raw'?: string;
+			color: `#${string}`;
+			'display-name': string;
+			emotes: EmotesObject | null;
+			'emotes-raw'?: string;
+			flags: string | null;
+			id: string;
+			login: string;
+			'message-type': 'announcement';
+			mod: boolean;
+			'msg-id': 'announcement';
+			'msg-param-color'?: 'PRIMARY' | 'SECONDARY';
+			'room-id': string;
+			subscriber: boolean;
+			'system-msg': null;
+			'tmi-sent-ts': string;
+			'user-id': string;
+			/** @deprecated */
+			'user-type'?: 'mod' | 'global_mod' | 'admin' | 'staff' | '';
+		}
 	}
+	type ChannelString = `#${string}`;
 	interface Events {
+		announcement: [ channel: ChannelString, tags: Tags.Announcement, msg: string, self: false, color: string ];
+		cheer: [ channel: ChannelString, tags: Tags.Cheer, message: string ];
 		connected: [ server: string, port: number ];
 		disconnected: [ reason: string ];
-		join: [ channel: string, username: string, self: boolean ];
-		message: [ channel: `#${string}`, tags: Tags.Message, message: string, self: boolean ];
-		cheer: [ channel: `#${string}`, tags: Tags.Cheer, message: string ];
+		join: [ channel: ChannelString, username: string, self: boolean ];
+		message: [ channel: ChannelString, tags: Tags.Message, message: string, self: boolean ];
 	}
 	export interface Client {
 		new(config: Config): Client;
 		connect(): Promise<void>;
 		on<K extends keyof Events>(event: K, callback: (...args: Events[K]) => void): void;
 		removeAllListeners(): void;
-		_isConnected(): boolean;
+		private _isConnected(): boolean;
+		private _onMessage({ data: string }): void;
 	}
 }
