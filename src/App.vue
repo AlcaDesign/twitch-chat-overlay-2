@@ -96,6 +96,7 @@ body {
 .chat-root {
 	position: fixed;
 	bottom: 0.2rem;
+	right: 0.2rem;
 	left: 0.2rem;
 }
 .chat-messages {
