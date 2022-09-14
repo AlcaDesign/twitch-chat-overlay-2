@@ -35,25 +35,25 @@ export namespace TmiJS {
 	}
 	export namespace Tags {
 		interface BadgeInfo {
-			subscriber: string;
-			founder: string;
+			subscriber?: string;
+			founder?: string;
 		}
 		interface Badges {
-			broadcaster: string;
-			moderator: string;
-			subscriber: string;
-			founder: string;
-			turbo: string;
-			premium: string;
+			broadcaster?: string;
+			moderator?: string;
+			subscriber?: string;
+			founder?: string;
+			turbo?: string;
+			premium?: string;
 		}
 		interface EmotesObject {
 			[key: string]: string[];
 		}
 		export interface Message {
-			'badge-info': BadgeInfo;
-			'badge-info-raw': string;
-			badges: Badges;
-			'badges-raw': string;
+			'badge-info'?: BadgeInfo;
+			'badge-info-raw'?: string;
+			badges?: Badges;
+			'badges-raw'?: string;
 			'client-nonce': string;
 			color: `#${string}`;
 			'display-name': string;
@@ -63,7 +63,7 @@ export namespace TmiJS {
 			id: string;
 			'message-type': 'chat' | 'action' | 'whisper';
 			/** @deprecated */
-			mod: boolean;
+			mod?: boolean;
 			'reply-parent-display-name'?: string;
 			'reply-parent-msg-body'?: string;
 			'reply-parent-msg-id'?: string;
@@ -74,10 +74,10 @@ export namespace TmiJS {
 			subscriber: boolean;
 			'tmi-sent-ts': string;
 			/** @deprecated */
-			turbo: boolean;
+			turbo?: boolean;
 			'user-id': string;
 			/** @deprecated */
-			'user-type': 'mod' | 'global_mod' | 'admin' | 'staff' | '';
+			'user-type'?: 'mod' | 'global_mod' | 'admin' | 'staff' | '';
 			username: string;
 		}
 		export interface Cheer extends Message {
