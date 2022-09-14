@@ -116,7 +116,7 @@ onMounted(async () => {
 			const regexAlternates = emoteList.map(e => e.code.replace(_escapeRegex, '\\$&'))
 			.sort((a, b) => b.length - a.length)
 			.join('|');
-			thirdPartyEmoteRegex.value = new RegExp(`(?:${regexAlternates})`, 'g');
+			thirdPartyEmoteRegex.value = new RegExp(`(?:^|\\b)(?:${regexAlternates})(?:$|\\b)`, 'g');
 			parts.value = parseMessageIntoParts(props.message);
 		}),
 		twitchBadges.load(channelName)
