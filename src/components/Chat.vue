@@ -90,16 +90,16 @@ const _escapeRegex = /[-[\]{}()*+?.,\\^$|#\s]/g;
 const props = defineProps<{
 	message: Message;
 }>();
+// defineEmits<{ (e: 'eventName'): void; }>();
 
 // const thirdPartyEmoteList = ref([] as Emote[]);
 const thirdPartyEmoteMap = ref<Map<Emote['code'], Emote>>(new Map());
 const thirdPartyEmoteRegex = ref(/^$/);
-// defineEmits<{ (e: 'eventName'): void; }>();
+/** Will look like: /(Cheer|Whatever)(\d{1,7})/gi */
+const cheermotesRegex = ref(/^$/);
 
 const parts = ref<MessagePart[]>([]);
 const badges = ref<string[]>([]);
-/** Will look like: /(Cheer|Whatever)(\d{1,7})/gi */
-const cheermotesRegex = ref(/^$/);
 
 const formattedName = (() => {
 	const { displayName, username } = props.message;
