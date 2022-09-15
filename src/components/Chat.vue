@@ -13,6 +13,8 @@
 	.name {{ formattedName }}
 	.content
 		Thread(v-if="isThread")
+		FirstTimeChatter(v-if="isFirstTimeChatter")
+		Announcement(v-if="isAnnouncement" style="margin-right: 0.25rem")
 		.part(
 			v-for="part in parts"
 			:class="getClassForPart(part)"
@@ -27,8 +29,9 @@ import type { Emote, EmoteInUse, TmiJS } from '@/types';
 import * as allThirdPartyEmotes from '@/lib/emotes';
 import * as twitchBadges from '@/lib/badges';
 import * as twitchCheermotes from '@/lib/cheermotes';
-// import * as helix from '@/lib/helix';
 import Thread from './icon/twitch/Thread.vue';
+import FirstTimeChatter from './icon/twitch/FirstTimeChatter.vue';
+import Announcement from './icon/twitch/Announcement.vue';
 
 export interface Message {
 	type: 'system' | 'chat' | 'action' | 'announcement' | 'sub' | 'resub' | 'raid';
@@ -112,7 +115,9 @@ const formattedName = (() => {
 	return displayName || username;
 })();
 
+const isAnnouncement = props.message.type === 'announcement';
 const isThread = 'reply-parent-msg-id' in props.message.tags;
+const isFirstTimeChatter = 'first-msg' in props.message.tags && props.message.tags['first-msg'] === true;
 
 const getBadgeUrl = (badge: string) => {
 	return `url(${badge.replace(/1$/, suggestedScale.toString())})`;
