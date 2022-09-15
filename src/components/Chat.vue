@@ -334,7 +334,7 @@ function parseMessageIntoParts(message: Message): MessagePart[] {
 				matches.push({
 					code: value,
 					color,
-					url: `https://d3aqoihi2n8ty8.cloudfront.net/actions/${name}/dark/animated/${image}/${scale}.gif`,
+					url: `https://d3aqoihi2n8ty8.cloudfront.net/actions/${name.toLowerCase()}/dark/animated/${image}/${scale}.gif`,
 					start: match.index,
 					end: match.index + m.length,
 				});
