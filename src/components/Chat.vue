@@ -3,7 +3,6 @@
 	:class="{ 'is-action': message.type === 'action' }"
 	:style="{ '--name-color': message.tags?.color }"
 )
-	//- TODO: Badges
 	.badges
 		.badge(
 			v-for="(badge, i) in badges"

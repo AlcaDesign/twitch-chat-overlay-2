@@ -89,6 +89,8 @@ onUnmounted(() => window.tmiClient?.removeAllListeners());
 </script>
 
 <style lang="scss">
+@use '@/assets/main';
+
 body {
 	background: hsl(0, 0%, 8%);
 	color: hsl(0, 0%, 100%);
