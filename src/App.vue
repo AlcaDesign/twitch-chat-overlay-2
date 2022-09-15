@@ -1,7 +1,7 @@
 <template lang="pug">
 .connection {{ tmiIsConnected ? 'Connected' : 'Disconnected' }}
 .chat-root
-	TransitionGroup(name="chat-messages" tag="div")
+	TransitionGroup(name="chat-messages")
 		Chat(v-for="message in messages" :key="message.id" :message="message")
 </template>
 
@@ -12,6 +12,7 @@ import type { Message } from './components/Chat.vue';
 import { onMounted, onUnmounted, ref } from 'vue';
 import * as allThirdPartyEmotes from '@/lib/emotes';
 import * as twitchBadges from '@/lib/badges';
+import * as twitchCheermotes from '@/lib/cheermotes';
 // import tmi from 'tmi.js';
 
 const tmiIsConnected = ref(false);
