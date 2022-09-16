@@ -11,9 +11,9 @@
 		)
 	.name {{ formattedName }}
 	.content
-		Thread(v-if="isThread")
-		FirstTimeChatter(v-if="isFirstTimeChatter")
-		Announcement(v-if="isAnnouncement" style="margin-right: 0.25rem")
+		Thread(v-if="isThread" style="margin-right: 0.125rem;")
+		FirstTimeChatter(v-if="isFirstTimeChatter" style="margin-right: 0.125rem;")
+		Announcement(v-if="isAnnouncement" style="margin-right: 0.25rem;")
 		.part(
 			v-for="part in parts"
 			:class="getClassForPart(part)"
