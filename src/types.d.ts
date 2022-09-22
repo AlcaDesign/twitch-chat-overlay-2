@@ -55,7 +55,7 @@ export namespace TmiJS {
 			badges?: Badges;
 			'badges-raw'?: string;
 			'client-nonce': string;
-			color: `#${string}`;
+			color?: string | null;
 			'display-name': string;
 			emotes: EmotesObject | null;
 			'emotes-raw'?: string;
@@ -91,7 +91,7 @@ export namespace TmiJS {
 			'badge-info-raw'?: string;
 			badges?: Badges;
 			'badges-raw'?: string;
-			color: `#${string}`;
+			color?: string;
 			'display-name': string;
 			emotes: EmotesObject | null;
 			'emotes-raw'?: string;
