@@ -165,7 +165,7 @@ function getClassForPart(part: MessagePart) {
 }
 
 function getStyleForPart(part: MessagePart) {
-	return 'style' in part ? part.style : {};
+	return 'style' in part ? part.style : undefined;
 }
 
 function getTitleForPart(part: MessagePart) {
