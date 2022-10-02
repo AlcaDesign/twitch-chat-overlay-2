@@ -2,7 +2,7 @@ import * as bttv from '@/lib/emotes/bttv';
 import * as ffz from '@/lib/emotes/ffz';
 import * as seventv from '@/lib/emotes/7tv';
 import * as cache from '@/lib/cache';
-import * as helix from '../helix';
+import * as helix from '@/lib/helix';
 import type { Emote } from '@/types';
 
 export function load(twitchLogin: string, twitchId?: string): Promise<Emote[]> {

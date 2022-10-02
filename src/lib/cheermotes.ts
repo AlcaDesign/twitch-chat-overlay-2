@@ -1,5 +1,5 @@
 import * as cache from '@/lib/cache';
-import * as helix from './helix';
+import * as helix from '@/lib/helix';
 
 export function load(twitchLogin: string, twitchId?: string): Promise<helix.Helix.CheermotesSimple> {
 	const cacheKey = `cheermotes:final:${twitchLogin}`;

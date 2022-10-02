@@ -1,5 +1,5 @@
 import * as cache from '@/lib/cache';
-import * as helix from './helix';
+import * as helix from '@/lib/helix';
 
 export function load(twitchLogin: string, twitchId?: string): Promise<Record<string, Record<string, string>>> {
 	const cacheKey = `badges:final:${twitchLogin}`;

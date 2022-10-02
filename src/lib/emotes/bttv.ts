@@ -1,5 +1,5 @@
 import type { Emote } from '@/types';
-import * as cache from '../cache';
+import * as cache from '@/lib/cache';
 
 const apiBase = `https://api.betterttv.net/3/cached`;
 
