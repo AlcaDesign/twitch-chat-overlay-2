@@ -1,5 +1,5 @@
 <template lang="pug">
-.connection {{ tmiIsConnected ? 'Connected' : 'Disconnected' }}
+//- .connection {{ tmiIsConnected ? 'Connected' : 'Disconnected' }}
 .chat-root
 	TransitionGroup(name="chat-messages")
 		Chat(v-for="message in messages" :key="message.id" :message="message")
