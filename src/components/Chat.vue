@@ -279,7 +279,7 @@ function parseMessageIntoParts(message: Message): MessagePart[] {
 		const newParts: MessagePart[] = [];
 		const text = n.content;
 		if(matches[0].start > 0) {
-			const content = text.slice(0, matches[0].start).trim();
+			const content = text.slice(0, matches[0].start);
 			if(content) {
 				newParts.push({ type: 'text', content });
 			}
@@ -298,7 +298,7 @@ function parseMessageIntoParts(message: Message): MessagePart[] {
 				continue;
 			}
 			const nextMatch = matches[i + 1];
-			const content = (nextMatch ? text.slice(end, nextMatch.start) : text.slice(end)).trim();
+			const content = (nextMatch ? text.slice(end, nextMatch.start) : text.slice(end));
 			newParts.push({ type: 'text', content });
 		}
 		parts.splice(i, 1, ...newParts);
