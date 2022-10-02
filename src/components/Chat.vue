@@ -539,7 +539,8 @@ function convertTwitchEmotes(originalEmotes: TmiJS.Tags.EmotesObject, text: stri
 	& + & {
 		margin-left: 0.25rem;
 	}
-	&-emote + &-emote {
+	&-emote + &-emote,
+	&-mention + &-text {
 		margin-left: 0rem;
 	}
 	&-cheermote {
