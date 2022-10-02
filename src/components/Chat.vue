@@ -261,7 +261,7 @@ function parseMessageIntoParts(message: Message): MessagePart[] {
 		if(n.type !== 'text' || !n.content.trim()) {
 			return undefined;
 		}
-		const reg = /^@([a-zA-Z0-9_]{1,25})/g;
+		const reg = /@([a-z0-9_]{1,25})/gi;
 		const str = n.content;
 		let match: RegExpExecArray | null;
 		const matches: { start: number; end: number; name: string; }[] = [];
