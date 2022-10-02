@@ -1,7 +1,7 @@
 <template lang="pug">
 .chat-line(
 	:class="{ 'is-action': message.type === 'action' }"
-	:style="{ '--name-color': message.tags?.color }"
+	:style="{ '--name-color': message.tags?.color ?? '' }"
 )
 	.badges
 		.badge(
@@ -97,7 +97,6 @@ const props = defineProps<{
 // const thirdPartyEmoteList = ref([] as Emote[]);
 const thirdPartyEmoteMap = ref<Map<Emote['code'], Emote>>(new Map());
 const thirdPartyEmoteRegex = ref(/^$/);
-/** Will look like: /(Cheer|Whatever)(\d{1,7})/gi */
 const cheermotesRegex = ref(/^$/);
 
 const parts = ref<MessagePart[]>([]);
@@ -458,7 +457,6 @@ function convertTwitchEmotes(originalEmotes: TmiJS.Tags.EmotesObject, text: stri
 		return p;
 	}, [] as EmoteInUse[]);
 }
-
 </script>
 <style lang="scss" scoped>
 .chat-line {

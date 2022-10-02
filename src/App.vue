@@ -13,7 +13,10 @@ import { onMounted, onUnmounted, ref } from 'vue';
 import * as allThirdPartyEmotes from '@/lib/emotes';
 import * as twitchBadges from '@/lib/badges';
 import * as twitchCheermotes from '@/lib/cheermotes';
+import { ColorAdjuster } from '@/lib/ffz-color';
 // import tmi from 'tmi.js';
+
+const adjuster = new ColorAdjuster('#141414', 1, 3.25);
 
 const tmiIsConnected = ref(false);
 const messages = ref<Message[]>([]);
@@ -75,7 +78,10 @@ onMounted(() => {
 			username: 'username' in tags ? tags.username : tags.login,
 			// emotes: convertTwitchEmotes(tags.emotes ?? {}, text),
 			emotesTwitch: tags.emotes ?? {},
-			tags,
+			tags: {
+				...tags,
+				color: (adjuster.process(tags.color) ?? (tags.color || '')) as string,
+			},
 			badges: (tags['badges-raw']?.split(',') ?? []).map(badge => {
 				const [ name, version ] = badge.split('/');
 				return [ name, version ];
