@@ -110,6 +110,28 @@ export namespace TmiJS {
 			/** @deprecated */
 			'user-type'?: 'mod' | 'global_mod' | 'admin' | 'staff' | '';
 		}
+		export interface Ban {
+			'room-id': string;
+			'target-user-id': string;
+			'tmi-sent-ts': string;
+		}
+		export interface Timeout {
+			'ban-duration': number;
+			'room-id': string;
+			'target-user-id': string;
+			'tmi-sent-ts': string;
+		}
+		export interface MessageDeleted {
+			login: string;
+			'room-id': string;
+			'target-msg-id': string;
+			'tmi-sent-ts': string;
+		}
+		/** Unused in tmi.js */
+		export interface ClearChat {
+			'room-id': string;
+			'tmi-sent-ts': string;
+		}
 	}
 	type ChannelString = `#${string}`;
 	interface Events {
@@ -119,6 +141,10 @@ export namespace TmiJS {
 		disconnected: [ reason: string ];
 		join: [ channel: ChannelString, username: string, self: boolean ];
 		message: [ channel: ChannelString, tags: Tags.Message, message: string, self: boolean ];
+		ban: [ channel: ChannelString, username: string, reason: null, tags: Tags.Ban ];
+		clearchat: [ channel: ChannelString ];
+		messagedeleted: [ channel: ChannelString, username: string, deletedMessage: string, tags: Tags.MessageDeleted ];
+		timeout: [ channel: ChannelString, username: string, reason: null, duration: number, tags: Tags.Timeout ];
 	}
 	export interface Client {
 		new(config: Config): Client;

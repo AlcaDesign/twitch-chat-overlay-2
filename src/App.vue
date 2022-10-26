@@ -91,6 +91,43 @@ onMounted(() => {
 	tmiClient.on('message', onMessage);
 	tmiClient.on('cheer', onMessage);
 	tmiClient.on('announcement', onMessage);
+	tmiClient.on('clearchat', channel => {
+		const arr = messages.value;
+		for(let i = arr.length - 1; i >= 0; i--) {
+			const n = arr[i];
+			if(n.channel === channel) {
+				arr.splice(i, 1);
+			}
+		}
+	});
+	tmiClient.on('ban', (channel, username, _, tags) => {
+		const arr = messages.value;
+		for(let i = arr.length - 1; i >= 0; i--) {
+			const n = arr[i];
+			if(n.channel === channel && n.tags['user-id'] === tags['target-user-id']) {
+				arr.splice(i, 1);
+			}
+		}
+	});
+	tmiClient.on('timeout', (channel, username, _, duration, tags) => {
+		const arr = messages.value;
+		for(let i = arr.length - 1; i >= 0; i--) {
+			const n = arr[i];
+			if(n.channel === channel && n.tags['user-id'] === tags['target-user-id']) {
+				arr.splice(i, 1);
+			}
+		}
+	});
+	tmiClient.on('messagedeleted', (channel, username, deletedMessage, tags) => {
+		const arr = messages.value;
+		for(let i = arr.length - 1; i >= 0; i--) {
+			const n = arr[i];
+			if(n.channel === channel && n.id === tags['target-msg-id']) {
+				arr.splice(i, 1);
+				break;
+			}
+		}
+	});
 });
 onUnmounted(() => window.tmiClient?.removeAllListeners());
 </script>
