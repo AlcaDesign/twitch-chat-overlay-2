@@ -12,16 +12,13 @@ export function load(twitchLogin: string, twitchId?: string): Promise<Emote[]> {
 		return cachedEmotes;
 	}
 	const prom = helix.resolveIdFromName(twitchLogin, twitchId)
-	.then(async id => {
-		const [ bg, bc, fg, fc, sg, sc ] = await Promise.all([
-			ffz.load(),
-			ffz.load(id),
-			bttv.load(),
-			bttv.load(id),
-			seventv.load(),
-			seventv.load(twitchLogin),
+	.then(async userId => {
+		const emoteGroups = await Promise.all([
+			ffz.load(), ffz.load(userId),
+			bttv.load(), bttv.load(userId),
+			seventv.load(), seventv.load(twitchLogin),
 		]);
-		return [ ...bg, ...bc, ...fg, ...fc, ...sg, ...sc ];
+		return emoteGroups.flat();
 	});
 	cache.add(cacheKey, prom);
 	return prom;
