@@ -9,6 +9,11 @@
     "target": "ES2017",
     "lib": [ "ES2019", "es2017", "dom"],
   },
+  "vueCompilerOptions": {
+    "plugins": [
+      "@volar/vue-language-plugin-pug"
+    ]
+  },
 
   "references": [
     {
