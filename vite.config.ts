@@ -7,7 +7,7 @@ import vue from '@vitejs/plugin-vue'
 export default defineConfig({
   // https://vitejs.dev/config/shared-options.html#base
   base: '',
-  plugins: [vue()],
+  plugins: [ vue() ],
   resolve: {
     alias: {
       '@lib': fileURLToPath(new URL('./src/lib', import.meta.url)),
@@ -15,9 +15,10 @@ export default defineConfig({
     }
   },
   build: {
+    // https://rollupjs.org/guide/en/#big-list-of-options
     rollupOptions: {
       output: {
-        assetFileNames: '[name][extname]',
+        assetFileNames: '[name].[hash].[ext]',
         entryFileNames: '[name].js',
       }
     }
