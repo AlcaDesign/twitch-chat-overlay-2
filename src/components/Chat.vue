@@ -257,52 +257,54 @@ function parseMessageIntoParts(message: Message): MessagePart[] {
 	}, undefined);
 
 	// Parse mentions:
-	parts.reduceRight((_, n, i) => {
-		if(n.type !== 'text' || !n.content.trim()) {
-			return undefined;
-		}
-		const reg = /@([a-z0-9_]{1,25})/gi;
-		const str = n.content;
-		let match: RegExpExecArray | null;
-		const matches: { start: number; end: number; name: string; }[] = [];
-		while((match = reg.exec(str)) !== null) {
-			const [ m, name ] = match;
-			matches.push({
-				start: match.index,
-				end: match.index + m.length,
-				name,
-			});
-		}
-		if(!matches.length) {
-			return undefined;
-		}
-		const newParts: MessagePart[] = [];
-		const text = n.content;
-		if(matches[0].start > 0) {
-			const content = text.slice(0, matches[0].start);
-			if(content) {
+	if(false) {
+		parts.reduceRight((_, n, i) => {
+			if(n.type !== 'text' || !n.content.trim()) {
+				return undefined;
+			}
+			const reg = /@([a-z0-9_]{1,25})/gi;
+			const str = n.content;
+			let match: RegExpExecArray | null;
+			const matches: { start: number; end: number; name: string; }[] = [];
+			while((match = reg.exec(str)) !== null) {
+				const [ m, name ] = match;
+				matches.push({
+					start: match.index,
+					end: match.index + m.length,
+					name,
+				});
+			}
+			if(!matches.length) {
+				return undefined;
+			}
+			const newParts: MessagePart[] = [];
+			const text = n.content;
+			if(matches[0].start > 0) {
+				const content = text.slice(0, matches[0].start);
+				if(content) {
+					newParts.push({ type: 'text', content });
+				}
+			}
+			for(let i = 0; i < matches.length; i++) {
+				const { end, name } = matches[i];
+				newParts.push({
+					type: 'mention',
+					content: `@${name}`,
+					style: {
+						color: 'red',
+						fontWeight: 'bold',
+					}
+				});
+				if(end === text.length) {
+					continue;
+				}
+				const nextMatch = matches[i + 1];
+				const content = (nextMatch ? text.slice(end, nextMatch.start) : text.slice(end));
 				newParts.push({ type: 'text', content });
 			}
-		}
-		for(let i = 0; i < matches.length; i++) {
-			const { end, name } = matches[i];
-			newParts.push({
-				type: 'mention',
-				content: `@${name}`,
-				style: {
-					color: 'red',
-					fontWeight: 'bold',
-				}
-			});
-			if(end === text.length) {
-				continue;
-			}
-			const nextMatch = matches[i + 1];
-			const content = (nextMatch ? text.slice(end, nextMatch.start) : text.slice(end));
-			newParts.push({ type: 'text', content });
-		}
-		parts.splice(i, 1, ...newParts);
-	}, undefined);
+			parts.splice(i, 1, ...newParts);
+		}, undefined);
+	}
 
 	// Parse cheermotes:
 	if('bits' in message.tags) {
