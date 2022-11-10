@@ -460,7 +460,7 @@ function convertTwitchEmotes(originalEmotes: TmiJS.Tags.EmotesObject, text: stri
 	}, [] as EmoteInUse[]);
 }
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
 .chat-line {
 	--name-color: #00b0f4;
 
